@@ -124,30 +124,31 @@ const SimpleChatbot = () => {
         </button>
       )}
 
-      {/* Chat Window - Mobile Responsive */}
+      {/* Chat Window - Properly sized for mobile */}
       {isOpen && (
         <div 
           className={`bg-white rounded-2xl shadow-2xl transition-all duration-300 flex flex-col overflow-hidden
             ${isMinimized 
-              ? 'w-72 sm:w-80 h-16' 
-              : 'fixed inset-4 sm:relative sm:inset-auto sm:w-96 sm:h-[600px] h-[calc(100vh-2rem)]'
+              ? 'w-80 sm:w-80 h-16' 
+              : 'w-[calc(100vw-2rem)] max-w-[380px] sm:w-96'
             }`}
           style={{
-            maxHeight: isMinimized ? '64px' : 'calc(100vh - 2rem)'
+            height: isMinimized ? '64px' : 'min(600px, calc(100vh - 8rem))',
+            maxHeight: isMinimized ? '64px' : 'calc(100vh - 8rem)'
           }}
         >
           {/* Header */}
           <div className="bg-blue-600 text-white p-3 sm:p-4 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center flex-shrink-0">
                 <MessageCircle className="text-blue-600" size={18} />
               </div>
-              <div>
-                <h3 className="font-semibold text-base sm:text-lg">Shyampari Edutech</h3>
+              <div className="min-w-0">
+                <h3 className="font-semibold text-sm sm:text-lg truncate">Shyampari Edutech</h3>
                 <p className="text-xs text-blue-100">Online</p>
               </div>
             </div>
-            <div className="flex gap-1 sm:gap-2">
+            <div className="flex gap-1 sm:gap-2 flex-shrink-0">
               <button
                 onClick={() => setIsMinimized(!isMinimized)}
                 className="hover:bg-blue-700 p-1.5 sm:p-2 rounded-lg transition-colors"
@@ -171,6 +172,10 @@ const SimpleChatbot = () => {
               <div
                 ref={scrollContainerRef}
                 className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-gray-50"
+                style={{ 
+                  minHeight: '200px',
+                  maxHeight: 'calc(100% - 180px)' 
+                }}
               >
                 {messages.map((message) => (
                   <div
@@ -184,7 +189,7 @@ const SimpleChatbot = () => {
                           : "bg-white text-gray-800 rounded-bl-none shadow-sm"
                       }`}
                     >
-                      <p className="text-xs sm:text-sm whitespace-pre-wrap break-words">{message.text}</p>
+                      <p className="text-xs sm:text-sm whitespace-pre-wrap break-words leading-relaxed">{message.text}</p>
                       <p
                         className={`text-[10px] sm:text-xs mt-1 ${
                           message.isUser ? "text-blue-100" : "text-gray-400"
@@ -226,7 +231,7 @@ const SimpleChatbot = () => {
                           setTimeout(() => handleSendMessage(), 100);
                         }}
                         disabled={isLoading}
-                        className="text-[10px] sm:text-xs text-left p-1.5 sm:p-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors"
+                        className="text-[10px] sm:text-xs text-left p-1.5 sm:p-2 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 text-blue-700 rounded-lg transition-colors disabled:opacity-50"
                       >
                         {question}
                       </button>
@@ -235,9 +240,9 @@ const SimpleChatbot = () => {
                 </div>
               )}
 
-              {/* Input Area */}
+              {/* Input Area - Fixed at bottom */}
               <div className="p-3 sm:p-4 bg-white border-t border-gray-200 flex-shrink-0">
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                   <input
                     type="text"
                     value={inputValue}
@@ -245,12 +250,12 @@ const SimpleChatbot = () => {
                     onKeyPress={handleKeyPress}
                     placeholder="Type your message..."
                     disabled={isLoading}
-                    className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:border-blue-600 text-xs sm:text-sm"
+                    className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-full focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 text-xs sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                   />
                   <button
                     onClick={handleSendMessage}
                     disabled={isLoading || !inputValue.trim()}
-                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white p-2 rounded-full transition-colors flex-shrink-0"
+                    className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white p-2 sm:p-2.5 rounded-full transition-colors flex-shrink-0"
                     aria-label="Send message"
                   >
                     <Send size={18} className="sm:w-5 sm:h-5" />
