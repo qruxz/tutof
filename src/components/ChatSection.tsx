@@ -35,12 +35,15 @@ const FullPageChatbot = () => {
 
   const sendMessage = async (messageText: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/chat`, {
+      const response = await fetch(`${API_BASE_URL}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: messageText }),
+        body: JSON.stringify({ 
+          session_id: "user-session-" + Date.now(),
+          message: messageText 
+        }),
       });
 
       if (!response.ok) {
@@ -52,7 +55,7 @@ const FullPageChatbot = () => {
     } catch (error) {
       console.error('Error sending message:', error);
       return {
-        response: 'Sorry, I\'m having trouble connecting to the server. Please try again later.',
+        answer: 'Sorry, I\'m having trouble connecting to the server. Please try again later.',
         success: false,
       };
     }
@@ -77,7 +80,7 @@ const FullPageChatbot = () => {
       
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: response.response || "Sorry, I couldn't process that. Please try again.",
+        text: response.answer || "Sorry, I couldn't process that. Please try again.",
         isUser: false,
         timestamp: new Date(),
       };
