@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Send, MessageCircle } from "lucide-react";
 
 // API Configuration
-const API_BASE_URL = 'https://tutob.onrender.com';
+const API_BASE_URL = 'https://faissrag.onrender.com';
 
 interface Message {
   id: string;
