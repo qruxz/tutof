@@ -6,7 +6,6 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="relative z-10">
-        {/* Header Navigation */}
         <header className="py-6 px-6">
           <nav className="max-w-6xl mx-auto">
             <div className="flex space-x-8">
