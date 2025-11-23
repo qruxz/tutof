@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Send, MessageCircle, X, Minimize2, Maximize2 } from "lucide-react";
+import { Send, MessageCircle } from "lucide-react";
 
 // API Configuration
 const API_BASE_URL = 'https://tutob.onrender.com';
@@ -11,7 +11,7 @@ interface Message {
   timestamp: Date;
 }
 
-const SimpleChatbot = () => {
+const FullPageChatbot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -22,7 +22,6 @@ const SimpleChatbot = () => {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -111,140 +110,108 @@ const SimpleChatbot = () => {
   ];
 
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 font-sans">
-      {/* Chat Window - Always Open */}
-      <div 
-        className={`bg-white rounded-tl-xl sm:rounded-tl-2xl shadow-xl transition-all duration-300 flex flex-col overflow-hidden border border-gray-200
-          ${isMinimized 
-            ? 'w-64 sm:w-80 h-14 sm:h-16' 
-            : 'w-[calc(100vw-2rem)] sm:w-80 md:w-96'
-          }`}
-        style={{
-          height: isMinimized ? 'auto' : 'clamp(400px, 70vh, 600px)',
-          maxHeight: isMinimized ? '64px' : '70vh'
-        }}
+    <div className="w-full h-screen bg-gradient-to-br from-purple-600 via-orange-500 to-purple-700 flex flex-col overflow-hidden font-sans">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-purple-700 to-orange-600 text-white p-4 sm:p-6 flex items-center justify-between flex-shrink-0 shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center">
+            <MessageCircle className="text-orange-600" size={24} />
+          </div>
+          <div>
+            <h1 className="font-bold text-lg sm:text-2xl">Shyampari Edutech</h1>
+            <p className="text-xs sm:text-sm text-orange-100">Online Support</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Messages Container */}
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5"
       >
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3 sm:p-4 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="w-7 h-7 sm:w-9 sm:h-9 bg-white rounded-full flex items-center justify-center flex-shrink-0">
-              <MessageCircle className="text-blue-600" size={16} />
-            </div>
-            <div className="min-w-0">
-              <h3 className="font-semibold text-xs sm:text-base truncate">Shyampari Edutech</h3>
-              {!isMinimized && <p className="text-xs text-blue-100">Online</p>}
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${message.isUser ? "justify-end" : "justify-start"} animate-fadeIn`}
+          >
+            <div
+              className={`max-w-xs sm:max-w-sm lg:max-w-md px-4 sm:px-5 py-3 sm:py-4 rounded-2xl ${
+                message.isUser
+                  ? "bg-white text-purple-900 rounded-br-none shadow-md"
+                  : "bg-purple-100 text-purple-900 rounded-bl-none shadow-md"
+              }`}
+            >
+              <p className="text-sm sm:text-base whitespace-pre-wrap break-words leading-relaxed">{message.text}</p>
+              <p className="text-xs text-purple-600 mt-2">
+                {message.timestamp.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
             </div>
           </div>
+        ))}
+
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="bg-purple-100 px-4 sm:px-5 py-3 sm:py-4 rounded-2xl rounded-bl-none shadow-md">
+              <div className="flex space-x-2">
+                <div className="w-2 h-2 bg-purple-700 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-purple-700 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-purple-700 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              </div>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Quick Questions */}
+      {messages.length === 1 && (
+        <div className="px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0">
+          <p className="text-xs sm:text-sm text-orange-100 mb-3">Quick questions:</p>
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+            {quickQuestions.map((question, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setInputValue(question);
+                  setTimeout(() => handleSendMessage(), 100);
+                }}
+                disabled={isLoading}
+                className="text-xs sm:text-sm text-left p-2.5 sm:p-3 bg-white hover:bg-orange-50 active:bg-orange-100 text-orange-700 rounded-lg transition-colors disabled:opacity-50 font-medium shadow-md"
+              >
+                {question}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Input Area */}
+      <div className="p-4 sm:p-6 flex-shrink-0 bg-gradient-to-t from-purple-900 to-transparent">
+        <div className="flex gap-2 items-end">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Type your message..."
+            disabled={isLoading}
+            className="flex-1 px-4 sm:px-5 py-3 sm:py-3.5 border-2 border-white bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-orange-300 text-sm sm:text-base disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-800"
+          />
           <button
-            onClick={() => setIsMinimized(!isMinimized)}
-            className="hover:bg-blue-800 p-1.5 sm:p-2 rounded-lg transition-colors flex-shrink-0"
-            aria-label={isMinimized ? "Maximize chat" : "Minimize chat"}
+            onClick={handleSendMessage}
+            disabled={isLoading || !inputValue.trim()}
+            className="bg-white hover:bg-orange-50 active:bg-orange-100 disabled:bg-gray-300 disabled:cursor-not-allowed text-orange-600 p-3 sm:p-3.5 rounded-full transition-colors flex-shrink-0 font-bold shadow-md"
+            aria-label="Send message"
           >
-            {isMinimized ? (
-              <Maximize2 size={16} className="sm:w-[18px] sm:h-[18px]" />
-            ) : (
-              <Minimize2 size={16} className="sm:w-[18px] sm:h-[18px]" />
-            )}
+            <Send size={20} className="sm:w-6 sm:h-6" />
           </button>
         </div>
-
-        {!isMinimized && (
-          <>
-            {/* Messages Area */}
-            <div
-              ref={scrollContainerRef}
-              className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-gray-50"
-            >
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`max-w-xs px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl ${
-                      message.isUser
-                        ? "bg-blue-600 text-white rounded-br-none"
-                        : "bg-white text-gray-800 rounded-bl-none shadow-sm border border-gray-100"
-                    }`}
-                  >
-                    <p className="text-xs sm:text-sm whitespace-pre-wrap break-words leading-relaxed">{message.text}</p>
-                    <p
-                      className={`text-[10px] sm:text-xs mt-1 ${
-                        message.isUser ? "text-blue-100" : "text-gray-400"
-                      }`}
-                    >
-                      {message.timestamp.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
-                </div>
-              ))}
-
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-white px-3 sm:px-4 py-2 sm:py-3 rounded-2xl rounded-bl-none shadow-sm border border-gray-100">
-                    <div className="flex space-x-2">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Quick Questions */}
-            {messages.length === 1 && (
-              <div className="p-2 sm:p-3 bg-white border-t border-gray-200 flex-shrink-0">
-                <p className="text-[10px] sm:text-xs text-gray-500 mb-2 px-1">Quick questions:</p>
-                <div className="grid grid-cols-2 gap-1 sm:gap-2">
-                  {quickQuestions.map((question, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setInputValue(question);
-                        setTimeout(() => handleSendMessage(), 100);
-                      }}
-                      disabled={isLoading}
-                      className="text-[9px] sm:text-xs text-left p-1.5 sm:p-2 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 text-blue-700 rounded-lg transition-colors disabled:opacity-50 font-medium"
-                    >
-                      {question}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Input Area */}
-            <div className="p-2.5 sm:p-4 bg-white border-t border-gray-200 flex-shrink-0">
-              <div className="flex gap-2 items-end">
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Type message..."
-                  disabled={isLoading}
-                  className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200 text-xs sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                />
-                <button
-                  onClick={handleSendMessage}
-                  disabled={isLoading || !inputValue.trim()}
-                  className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white p-2 sm:p-2.5 rounded-full transition-colors flex-shrink-0"
-                  aria-label="Send message"
-                >
-                  <Send size={16} className="sm:w-5 sm:h-5" />
-                </button>
-              </div>
-            </div>
-          </>
-        )}
       </div>
     </div>
   );
 };
 
-export default SimpleChatbot;
+export default FullPageChatbot;
