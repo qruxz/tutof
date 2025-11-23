@@ -114,7 +114,7 @@ const SimpleChatbot = () => {
     <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 font-sans">
       {/* Chat Window - Always Open */}
       <div 
-        className={`bg-white rounded-xl sm:rounded-2xl shadow-xl transition-all duration-300 flex flex-col overflow-hidden border border-gray-200
+        className={`bg-white rounded-tl-xl sm:rounded-tl-2xl shadow-xl transition-all duration-300 flex flex-col overflow-hidden border border-gray-200
           ${isMinimized 
             ? 'w-64 sm:w-80 h-14 sm:h-16' 
             : 'w-[calc(100vw-2rem)] sm:w-80 md:w-96'
